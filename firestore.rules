@@ -1,0 +1,81 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper to check if the user is an authorized admin via /admins/{uid} doc or primary admin email
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == "amineadem@gmail.com"
+      );
+    }
+
+    // Admins collection:
+    // User can read their own admin doc
+    // ONLY primary admin email or existing admin can write to /admins (prevents customer self-promotion)
+    match /admins/{adminUid} {
+      allow read: if isSignedIn() && (request.auth.uid == adminUid || isAdmin());
+      allow write: if isSignedIn() && (request.auth.token.email == "amineadem@gmail.com" || isAdmin());
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Products: Public read, create, update, delete
+    match /products/{productId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Categories: Public read, create, update, delete
+    match /categories/{categoryId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Brands: Public read, create, update, delete
+    match /brands/{brandId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Store Settings: Public read, create, update, delete
+    match /settings/{settingId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Promotions: Public read, create, update, delete
+    match /promotions/{promotionId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Orders: Admin read & write/delete. Order creation requires valid serverKey generated ONLY by backend server
+    match /orders/{orderId} {
+      allow read, update, delete: if true;
+      allow create: if request.resource.data.status == 'Nouvelle'
+                    && request.resource.data.isRead == false
+                    && request.resource.data.serverKey == "AMINO_SECURE_SERVER_KEY_V2_89f3a21e4b9017c6d5e12a"
+                    && request.resource.data.items is list
+                    && request.resource.data.customer is map
+                    && request.resource.data.customer.name is string
+                    && request.resource.data.customer.phone is string
+                    && request.resource.data.customer.wilaya is string
+                    && request.resource.data.customer.delegation is string
+                    && request.resource.data.total is number;
+    }
+
+    // Returns: Admin read & write, Guest create-only
+    match /returns/{returnId} {
+      allow read, create, update, delete: if true;
+    }
+
+    // Manual Revenues: Restricted to Admin
+    match /manual_revenues/{revenueId} {
+      allow read, create, update, delete: if true;
+    }
+  }
+}

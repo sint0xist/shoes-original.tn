@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "products": {
+      "title": "Products",
+      "description": "Shoe products available in Amino-Shoes store",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "brandId": { "type": "string" },
+        "brandName": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "categoryName": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "promoPrice": { "type": "number" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "sizes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "size": { "type": "string" },
+              "stock": { "type": "number" }
+            }
+          }
+        },
+        "isNew": { "type": "boolean" },
+        "isBestSeller": { "type": "boolean" },
+        "isPromo": { "type": "boolean" },
+        "published": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "price", "images", "published"]
+    },
+    "categories": {
+      "title": "Categories",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "slug": { "type": "string" }
+      }
+    },
+    "brands": {
+      "title": "Brands",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "logoUrl": { "type": "string" }
+      }
+    },
+    "orders": {
+      "title": "Orders",
+      "type": "object",
+      "properties": {
+        "orderNumber": { "type": "string" },
+        "customerName": { "type": "string" },
+        "phone": { "type": "string" },
+        "wilaya": { "type": "string" },
+        "delegation": { "type": "string" },
+        "address": { "type": "string" },
+        "deliveryMethod": { "type": "string" },
+        "total": { "type": "number" },
+        "status": { "type": "string" },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      }
+    },
+    "promotions": {
+      "title": "Promotions",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string" },
+        "discountPercent": { "type": "number" },
+        "isActive": { "type": "boolean" }
+      }
+    },
+    "settings": {
+      "title": "Settings",
+      "type": "object",
+      "properties": {
+        "phone1": { "type": "string" },
+        "phone2": { "type": "string" }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Amino-Shoes",
+  "description": "Le meilleur rapport qualité-prix en Tunisie — 100% Original",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
