@@ -54,9 +54,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col md:flex-row">
+    <div className="min-h-screen md:h-screen bg-slate-100 flex flex-col md:flex-row">
       {/* Sidebar Desktop */}
-      <aside className="w-full md:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col justify-between">
+      <aside className="w-full md:w-64 md:h-screen md:overflow-y-auto bg-slate-900 text-white flex-shrink-0 flex flex-col justify-between">
         <div>
           {/* Header */}
           <div className="p-6 border-b border-slate-800 flex items-center justify-between">
@@ -135,7 +135,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 md:overflow-hidden">
         {/* Top Navbar */}
         <header className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-3">
@@ -212,7 +212,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </header>
 
         {/* Body View */}
-        <main className="flex-1 overflow-y-auto p-6">{children}</main>
+        <main className="flex-1 md:overflow-y-auto p-6">{children}</main>
       </div>
     </div>
   );
