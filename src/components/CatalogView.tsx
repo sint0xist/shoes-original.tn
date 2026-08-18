@@ -73,6 +73,15 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
   const [maxPrice, setMaxPrice] = useState<number>(3000);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
+  // Closes the mobile filter drawer and scrolls back to the top of the results.
+  // Without this, the page stayed at whatever scroll position it had before the
+  // drawer opened, which could be past the end of a newly (shorter) filtered list —
+  // making it look like the page "loads at the bottom" until you scroll up manually.
+  const closeMobileFilter = () => {
+    setMobileFilterOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Available Sizes list — built dynamically from every size configured on any product
   // (so custom pointures added in l'admin, e.g. 46, 47, 43 1/2, 46 1/2, show up automatically here)
   const availableSizes = useMemo(() => {
@@ -395,7 +404,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
                   Filtres de recherche
                 </span>
                 <button
-                  onClick={() => setMobileFilterOpen(false)}
+                  onClick={closeMobileFilter}
                   className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
                 >
                   <X className="w-5 h-5" />
@@ -486,7 +495,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
 
             <div className="space-y-2 pt-4 border-t border-slate-100">
               <button
-                onClick={() => setMobileFilterOpen(false)}
+                onClick={closeMobileFilter}
                 className="w-full py-3 rounded-xl bg-blue-600 text-white font-extrabold text-xs text-center shadow-xs"
               >
                 Voir {filteredProducts.length} résultat(s)
