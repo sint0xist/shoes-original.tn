@@ -194,7 +194,8 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({ orders, settin
 
       {/* Order Detail Modal */}
       {selectedOrder && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs">
+          <div className="min-h-full flex items-center justify-center p-4">
           <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 animate-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div>
@@ -292,6 +293,7 @@ export const AdminOrdersView: React.FC<AdminOrdersViewProps> = ({ orders, settin
                 Fermer
               </button>
             </div>
+          </div>
           </div>
         </div>
       )}
