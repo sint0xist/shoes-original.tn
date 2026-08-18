@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Filter, SlidersHorizontal, ArrowUpDown, X, Check, Search, RotateCcw } from 'lucide-react';
 import { Product, Category, Brand } from '../types';
 import { ProductCard } from './ProductCard';
@@ -81,6 +81,20 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
     setMobileFilterOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Same problem also happens on desktop: picking a brand/size/etc. from the sidebar
+  // filters doesn't open/close any drawer, so nothing used to reset the scroll position.
+  // If the page was scrolled down when a filter was applied, the (now shorter) filtered
+  // grid rendered below the current scroll position — looking like it "loads at the
+  // bottom". Scroll back to the top whenever a discrete filter or the sort order changes.
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [selectedCategory, selectedBrand, selectedSize, onlyPromo, onlyInStock, sortBy]);
 
   // Available Sizes list — built dynamically from every size configured on any product
   // (so custom pointures added in l'admin, e.g. 46, 47, 43 1/2, 46 1/2, show up automatically here)
