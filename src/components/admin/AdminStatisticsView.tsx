@@ -109,7 +109,8 @@ export const AdminStatisticsView: React.FC<AdminStatisticsViewProps> = ({
 
       {/* Reset Confirmation Modal */}
       {showResetConfirm && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs">
+          <div className="min-h-full flex items-center justify-center p-4">
           <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-5">
             <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
               <WarningIcon className="w-6 h-6" />
@@ -142,6 +143,7 @@ export const AdminStatisticsView: React.FC<AdminStatisticsViewProps> = ({
                 {resetting ? 'Réinitialisation...' : 'Oui, tout réinitialiser'}
               </button>
             </div>
+          </div>
           </div>
         </div>
       )}
