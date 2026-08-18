@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   BarChart,
   Bar,
@@ -11,7 +11,9 @@ import {
   Cell,
   Legend
 } from 'recharts';
+import { Trash2 as TrashIcon, AlertTriangle as WarningIcon } from 'lucide-react';
 import { Product, Order, OrderReturn } from '../../types';
+import { resetStoreStatistics } from '../../services/storeService';
 
 interface AdminStatisticsViewProps {
   products: Product[];
@@ -24,6 +26,21 @@ export const AdminStatisticsView: React.FC<AdminStatisticsViewProps> = ({
   orders,
   returns
 }) => {
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [resetting, setResetting] = useState(false);
+
+  const handleReset = async () => {
+    setResetting(true);
+    try {
+      await resetStoreStatistics();
+      setShowResetConfirm(false);
+    } catch (err) {
+      console.error('Erreur lors de la réinitialisation des statistiques:', err);
+      alert("Une erreur s'est produite pendant la réinitialisation. Réessayez.");
+    } finally {
+      setResetting(false);
+    }
+  };
   // Aggregate Sales by Size (Pointure)
   const sizeSalesData = useMemo(() => {
     const sizeMap: Record<string, number> = {};
@@ -80,7 +97,54 @@ export const AdminStatisticsView: React.FC<AdminStatisticsViewProps> = ({
             Analyse détaillée des ventes par pointure, marque, statut et chiffre d'affaires.
           </p>
         </div>
+
+        <button
+          onClick={() => setShowResetConfirm(true)}
+          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 text-xs font-bold transition-colors shrink-0"
+        >
+          <TrashIcon className="w-4 h-4" />
+          Réinitialiser les statistiques
+        </button>
       </div>
+
+      {/* Reset Confirmation Modal */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl p-6 sm:p-8 space-y-5">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
+              <WarningIcon className="w-6 h-6" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-black text-slate-900">
+                Réinitialiser toutes les statistiques ?
+              </h3>
+              <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                Cette action va remettre à zéro le <strong>chiffre d'affaires</strong>, le nombre de{' '}
+                <strong>commandes</strong> et les <strong>retours</strong> en supprimant
+                définitivement toutes les commandes, tous les retours et tous les revenus manuels
+                enregistrés. Le catalogue produits, les catégories et les paramètres du magasin ne
+                sont pas affectés. Cette action est irréversible.
+              </p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setShowResetConfirm(false)}
+                disabled={resetting}
+                className="flex-1 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition-colors disabled:opacity-50"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleReset}
+                disabled={resetting}
+                className="flex-1 py-2.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-700 transition-colors disabled:opacity-50"
+              >
+                {resetting ? 'Réinitialisation...' : 'Oui, tout réinitialiser'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Overview Metric Row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
