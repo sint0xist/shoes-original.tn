@@ -3,6 +3,7 @@ import { Filter, SlidersHorizontal, ArrowUpDown, X, Check, Search, RotateCcw } f
 import { Product, Category, Brand } from '../types';
 import { ProductCard } from './ProductCard';
 import { useLanguage } from '../context/LanguageContext';
+import { sortSizeLabels } from '../lib/sizeUtils';
 
 interface CatalogViewProps {
   products: Product[];
@@ -72,8 +73,13 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
   const [maxPrice, setMaxPrice] = useState<number>(3000);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  // Available Sizes list
-  const availableSizes = ['36', '37', '38', '39', '40', '41', '42', '43', '44', '45'];
+  // Available Sizes list — built dynamically from every size configured on any product
+  // (so custom pointures added in l'admin, e.g. 46, 47, 43 1/2, 46 1/2, show up automatically here)
+  const availableSizes = useMemo(() => {
+    const unique = new Set<string>();
+    products.forEach((p) => p.sizes.forEach((s) => unique.add(s.size)));
+    return sortSizeLabels(Array.from(unique));
+  }, [products]);
 
   // Filter & Sort Logic
   const filteredProducts = useMemo(() => {
