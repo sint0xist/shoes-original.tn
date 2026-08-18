@@ -157,7 +157,8 @@ Merci pour votre confiance ! 👟`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs">
+      <div className="min-h-full flex items-center justify-center p-4">
       <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 my-8">
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50">
@@ -522,6 +523,7 @@ Merci pour votre confiance ! 👟`;
             </button>
           </form>
         )}
+      </div>
       </div>
     </div>
   );
