@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2, Eye, EyeOff, Sparkles, Flame, Tag, Save, X, Image a
 import { Product, Category, Brand, SizeStock } from '../../types';
 import { addProduct, updateProduct, deleteProduct } from '../../services/storeService';
 import { compressFileToDataUrl, compressImageDataUrl, getPayloadSizeInBytes } from '../../lib/imageCompressor';
+import { sortSizes } from '../../lib/sizeUtils';
 
 interface AdminProductsViewProps {
   products: Product[];
@@ -20,6 +21,7 @@ export const AdminProductsView: React.FC<AdminProductsViewProps> = ({
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [newImageUrl, setNewImageUrl] = useState('');
+  const [newSizeLabel, setNewSizeLabel] = useState('');
 
   // Default shoe sizes 36 to 45
   const defaultSizes: SizeStock[] = [
@@ -533,10 +535,24 @@ export const AdminProductsView: React.FC<AdminProductsViewProps> = ({
                 <label className="text-xs font-black text-slate-900 uppercase tracking-wider block">
                   Stock par Pointure (Quantités disponibles)
                 </label>
+                <p className="text-[11px] text-slate-500 font-medium -mt-1.5">
+                  Ajoutez n'importe quelle pointure : 46, 47, demi-pointures (43 1/2, 46 1/2), etc.
+                </p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                   {(editingProduct.sizes || defaultSizes).map((sz, idx) => (
-                    <div key={sz.size} className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                    <div key={sz.size} className="relative p-2.5 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedSizes = (editingProduct.sizes || defaultSizes).filter((_, i) => i !== idx);
+                          setEditingProduct({ ...editingProduct, sizes: updatedSizes });
+                        }}
+                        className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-100 text-rose-600 hover:bg-rose-200 flex items-center justify-center"
+                        title="Supprimer cette pointure"
+                      >
+                        <X className="w-2.5 h-2.5" />
+                      </button>
                       <span className="text-xs font-extrabold text-slate-800 block text-center">
                         Taille {sz.size}
                       </span>
@@ -553,6 +569,50 @@ export const AdminProductsView: React.FC<AdminProductsViewProps> = ({
                       />
                     </div>
                   ))}
+                </div>
+
+                {/* Add a custom size */}
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="text"
+                    value={newSizeLabel}
+                    onChange={(e) => setNewSizeLabel(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key !== 'Enter') return;
+                      e.preventDefault();
+                      const label = newSizeLabel.trim();
+                      if (!label) return;
+                      const current = editingProduct.sizes || defaultSizes;
+                      if (current.some((s) => s.size === label)) {
+                        setNewSizeLabel('');
+                        return;
+                      }
+                      const updatedSizes = sortSizes([...current, { size: label, stock: 0 }]);
+                      setEditingProduct({ ...editingProduct, sizes: updatedSizes });
+                      setNewSizeLabel('');
+                    }}
+                    placeholder="Ex: 47 ou 46 1/2"
+                    className="flex-1 bg-white border border-slate-300 rounded-xl py-2 px-3 text-xs font-semibold focus:outline-hidden focus:ring-2 focus:ring-blue-500/20"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const label = newSizeLabel.trim();
+                      if (!label) return;
+                      const current = editingProduct.sizes || defaultSizes;
+                      if (current.some((s) => s.size === label)) {
+                        setNewSizeLabel('');
+                        return;
+                      }
+                      const updatedSizes = sortSizes([...current, { size: label, stock: 0 }]);
+                      setEditingProduct({ ...editingProduct, sizes: updatedSizes });
+                      setNewSizeLabel('');
+                    }}
+                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1.5 shrink-0"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Ajouter la pointure
+                  </button>
                 </div>
               </div>
 
