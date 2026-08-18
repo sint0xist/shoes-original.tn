@@ -80,7 +80,8 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isEmbedded = f
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/70 backdrop-blur-xs">
+      <div className="min-h-full flex items-center justify-center p-4">
       <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 animate-in zoom-in-95 duration-200">
         <button
           onClick={handleClose}
@@ -192,6 +193,7 @@ export const AdminLoginModal: React.FC<AdminLoginModalProps> = ({ isEmbedded = f
           </button>
           {seedStatus && <p className="text-[11px] font-bold text-emerald-600 mt-1">{seedStatus}</p>}
         </div>
+      </div>
       </div>
     </div>
   );
