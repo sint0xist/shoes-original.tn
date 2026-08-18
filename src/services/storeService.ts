@@ -299,6 +299,37 @@ export async function markOrdersAsRead(orderIds: string[]): Promise<void> {
   await batch.commit();
 }
 
+// Delete every document in a collection, in batches of 400 (Firestore batch limit is 500).
+async function deleteAllDocsInCollection(colName: string): Promise<void> {
+  const snap = await getDocs(collection(db, colName));
+  const docs = snap.docs;
+  for (let i = 0; i < docs.length; i += 400) {
+    const batch = writeBatch(db);
+    docs.slice(i, i + 400).forEach((d) => batch.delete(d.ref));
+    await batch.commit();
+  }
+}
+
+// Danger zone: wipe all orders (resets "Chiffre d'affaires" and "Commandes" counters to 0)
+export async function deleteAllOrders(): Promise<void> {
+  await deleteAllDocsInCollection(ORDERS_COL);
+}
+
+// Danger zone: wipe all returns (resets "Retours" counter to 0)
+export async function deleteAllReturns(): Promise<void> {
+  await deleteAllDocsInCollection(RETURNS_COL);
+}
+
+// Danger zone: wipe all manual revenue entries
+export async function deleteAllManualRevenues(): Promise<void> {
+  await deleteAllDocsInCollection(MANUAL_REVENUE_COL);
+}
+
+// Resets all testing data at once: orders, returns and manual revenue entries.
+export async function resetStoreStatistics(): Promise<void> {
+  await Promise.all([deleteAllOrders(), deleteAllReturns(), deleteAllManualRevenues()]);
+}
+
 // Promotions
 export function subscribePromotions(callback: (promos: Promotion[]) => void) {
   return onSnapshot(
