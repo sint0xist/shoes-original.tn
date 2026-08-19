@@ -10,6 +10,7 @@ interface CatalogViewProps {
   categories: Category[];
   brands: Brand[];
   initialTab?: string;
+  initialBrand?: string | null;
   searchQuery?: string;
   setSearchQuery?: (q: string) => void;
   selectedCategory?: string | null;
@@ -23,6 +24,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
   categories,
   brands,
   initialTab,
+  initialBrand,
   searchQuery: searchQueryProp,
   setSearchQuery: setSearchQueryProp,
   selectedCategory: selectedCategoryProp,
@@ -65,7 +67,7 @@ export const CatalogView: React.FC<CatalogViewProps> = ({
     }
   };
 
-  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(initialBrand ?? null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [onlyPromo, setOnlyPromo] = useState(initialTab === 'promotions');
   const [onlyInStock, setOnlyInStock] = useState(false);
