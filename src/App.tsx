@@ -74,6 +74,7 @@ function MainApp() {
   const [currentPath, setCurrentPath] = useState<string>(getInitialPath);
   const [activeTab, setActiveTab] = useState('home');
   const [searchQuery, setSearchQuery] = useState('');
+  const [homeBrandFilter, setHomeBrandFilter] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [legalModalType, setLegalModalType] = useState<string | null>(null);
 
@@ -120,6 +121,7 @@ function MainApp() {
       }
     } else {
       setActiveTab(tab);
+      setHomeBrandFilter(null);
       const targetPath = tab === 'home' ? '/accueil' : `/${tab}`;
       setCurrentPath(targetPath);
       try {
@@ -328,8 +330,14 @@ function MainApp() {
             {/* Hero Banner */}
             <Hero
               settings={settings}
-              onExploreCatalog={() => setActiveTab('catalog')}
-              onQuickOrderClick={() => setActiveTab('catalog')}
+              onExploreCatalog={() => {
+                setHomeBrandFilter(null);
+                setActiveTab('catalog');
+              }}
+              onQuickOrderClick={() => {
+                setHomeBrandFilter(null);
+                setActiveTab('catalog');
+              }}
             />
 
             {/* Commander en 3 Clics Explanation */}
@@ -387,7 +395,9 @@ function MainApp() {
                   <div
                     key={b.id}
                     onClick={() => {
-                      setActiveTab('catalog');
+                      handleTabChange('catalog');
+                      setHomeBrandFilter(b.id);
+                      window.scrollTo({ top: 0, behavior: 'auto' });
                     }}
                     className="p-6 bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-blue-400 cursor-pointer text-center space-y-2 transition-all group"
                   >
@@ -415,6 +425,7 @@ function MainApp() {
             categories={categories}
             brands={brands}
             initialTab={activeTab}
+            initialBrand={homeBrandFilter}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
             onProductClick={(p) => setSelectedProduct(p)}
