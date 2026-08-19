@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, Layers, Tag, Check, X, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Layers, Tag, Check, X, Loader2, Upload, Image as ImageIcon } from 'lucide-react';
 import { Category, Brand } from '../../types';
 import {
   addCategory,
@@ -9,6 +9,7 @@ import {
   updateBrand,
   deleteBrand
 } from '../../services/storeService';
+import { compressFileToDataUrl } from '../../lib/imageCompressor';
 
 interface AdminCategoriesBrandsViewProps {
   categories: Category[];
@@ -26,6 +27,24 @@ export const AdminCategoriesBrandsView: React.FC<AdminCategoriesBrandsViewProps>
   const [deletingBrandId, setDeletingBrandId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [uploadingLogoId, setUploadingLogoId] = useState<string | null>(null);
+
+  const handleBrandLogoUpload = async (brandId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    try {
+      setUploadingLogoId(brandId);
+      setErrorMsg(null);
+      const compressedDataUrl = await compressFileToDataUrl(file, 400, 0.85);
+      await updateBrand(brandId, { logoUrl: compressedDataUrl });
+    } catch (err) {
+      console.error('Error uploading brand logo:', err);
+      setErrorMsg('Erreur lors de l\'import du logo');
+    } finally {
+      setUploadingLogoId(null);
+    }
+  };
 
   const handleAddCat = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -195,9 +214,32 @@ export const AdminCategoriesBrandsView: React.FC<AdminCategoriesBrandsViewProps>
           {/* List */}
           <div className="divide-y divide-slate-100">
             {brands.map((b) => (
-              <div key={b.id} className="py-2.5 flex items-center justify-between text-xs">
-                <span className="font-bold text-slate-900">{b.name}</span>
-                
+              <div key={b.id} className="py-2.5 flex items-center justify-between text-xs gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <label
+                    className="relative w-9 h-9 shrink-0 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center overflow-hidden cursor-pointer hover:border-blue-400 transition-colors group"
+                    title="Changer le logo"
+                  >
+                    {uploadingLogoId === b.id ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin text-blue-600" />
+                    ) : b.logoUrl ? (
+                      <img src={b.logoUrl} alt={b.name} className="w-full h-full object-contain p-1" />
+                    ) : (
+                      <ImageIcon className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-500" />
+                    )}
+                    <span className="absolute inset-0 bg-black/0 group-hover:bg-black/30 flex items-center justify-center transition-colors">
+                      <Upload className="w-3 h-3 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => handleBrandLogoUpload(b.id, e)}
+                    />
+                  </label>
+                  <span className="font-bold text-slate-900 truncate">{b.name}</span>
+                </div>
+
                 {deletingBrandId === b.id ? (
                   <div className="flex items-center gap-2 bg-rose-50 p-1 rounded-lg">
                     <span className="text-[11px] font-bold text-rose-700">Supprimer ?</span>
