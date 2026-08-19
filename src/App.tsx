@@ -109,6 +109,24 @@ function MainApp() {
     }
   };
 
+  // Navigate to the catalog pre-filtered on a single brand (used by the
+  // homepage "Marques Originales Disponibles" tiles). Kept separate from
+  // handleTabChange so the brand filter is never wiped out by it.
+  const handleBrandTileClick = (brandId: string) => {
+    setActiveTab('catalog');
+    setHomeBrandFilter(brandId);
+    const targetPath = '/catalog';
+    setCurrentPath(targetPath);
+    try {
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState({}, '', targetPath);
+      }
+    } catch (e) {
+      console.warn('URL rewrite failed:', e);
+    }
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
   const handleTabChange = (tab: string) => {
     if (tab === 'admin') {
       setCurrentPath('/admin');
@@ -394,15 +412,23 @@ function MainApp() {
                 {brands.map((b) => (
                   <div
                     key={b.id}
-                    onClick={() => {
-                      handleTabChange('catalog');
-                      setHomeBrandFilter(b.id);
-                      window.scrollTo({ top: 0, behavior: 'auto' });
-                    }}
+                    onClick={() => handleBrandTileClick(b.id)}
                     className="p-6 bg-white rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:border-blue-400 cursor-pointer text-center space-y-2 transition-all group"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-slate-900 text-white font-black text-lg flex items-center justify-center mx-auto group-hover:bg-blue-600 transition-colors">
-                      {b.name.charAt(0)}
+                    <div className="w-12 h-12 rounded-xl bg-slate-900 text-white font-black text-lg flex items-center justify-center mx-auto overflow-hidden group-hover:bg-blue-600 transition-colors">
+                      {b.logoUrl ? (
+                        <img
+                          src={b.logoUrl}
+                          alt={b.name}
+                          className="w-full h-full object-contain bg-white p-1.5"
+                          onError={(e) => {
+                            // Broken/removed logo URL: fall back to the letter avatar
+                            (e.currentTarget as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        b.name.charAt(0)
+                      )}
                     </div>
                     <h3 className="font-extrabold text-slate-900 text-sm">{b.name}</h3>
                   </div>
